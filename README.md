@@ -30,11 +30,11 @@ pip install requests
 
 - Jittor
 
+提供docker安装，其他安装方式见 [Jittor](https://github.com/Jittor/jittor) 官网。
+
 ```bash
 docker pull jittor/jittor-cuda:11.1-16.04
 ```
-
-其他安装方式见 [Jittor](https://github.com/Jittor/jittor) 官网。
 
 ### 使用方法
 
@@ -63,6 +63,8 @@ python coco_validation.py --coco_path ./coco --model <your_model_path>.pt
 #### jittor-retinanet
 
 - 数据准备
+- 模型训练
+- 验证
 
 ### 对齐验证
 
