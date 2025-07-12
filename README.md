@@ -11,6 +11,8 @@
 - 使用 **Jittor 框架** 对齐 PyTorch 实现，并在相同配置下进行训练和评估；
 - 对 **两种版本（PyTorch / Jittor）** 的训练性能、检测精度（mAP）、收敛速度和损失变化进行对比分析。
 
+<可视化 part>
+
 ### 项目结构
 
 ```wiki
@@ -18,6 +20,35 @@
 ```
 
 ### 环境配置
+
+#### 硬件环境
+
+```bash
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 550.90.07              Driver Version: 550.90.07      CUDA Version: 12.4     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA A10                     On  |   00000000:00:06.0 Off |                    0 |
+|  0%   36C    P0             16W /  150W |     4MiB /  23028MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   1  NVIDIA A10                     On  |   00000000:00:07.0 Off |                    0 |
+|  0%   35C    P8             15W /  150W |       4MiB /  23028MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   2  NVIDIA A10                     On  |   00000000:00:08.0 Off |                    0 |
+|  0%   37C    P8             16W /  150W |       4MiB /  23028MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+|   3  NVIDIA A10                     On  |   00000000:00:09.0 Off |                    0 |
+|  0%   34C    P8             15W /  150W |       4MiB /  23028MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
+```
 
 #### Pytorch
 
@@ -51,13 +82,17 @@ python -m jittor.test.test_cudnn_op
 
 ### 使用方法
 
-#### pytorch-retinanet
+#### 数据准备
 
-- 数据准备
+下载 coco 2017 数据集：
 
-```bash
+```python
 python prepare_data.py
 ```
+
+或者您可以使用我们的 [tiny_coco数据集](https://www.kaggle.com/datasets/weipengchao/tiny-coco1k) 先跑通一遍流程。
+
+#### pytorch-retinanet
 
 - 模型训练
 
@@ -75,22 +110,19 @@ python coco_validation.py --coco_path ./coco --model <your_model_path>.pt
 
 #### jittor-retinanet
 
-- 数据准备
 - 模型训练
 - 验证
 
+### 训练结果
+
 ### 对齐验证
 
-
-
 ### 相关资源
-
-
 
 | 链接                                                         | 说明                                                         |
 | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view | Pytorch + ResNet50 训练模型                                  |
 |                                                              | Jittor + ResNet50 训练模型                                   |
-| https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      | 抽取自coco2017的小数据集，数据集合结构与coco2017一致，用于快速测试项目功能。 |
+| https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      | 抽取自coco2017的小数据集，数据集结构与coco2017一致，用于快速测试项目功能 |
 
 
