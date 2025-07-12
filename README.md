@@ -19,7 +19,7 @@
 
 ### 环境配置
 
-- Pytorch
+#### Pytorch
 
 ```bash
 pip install pandas
@@ -28,12 +28,25 @@ pip install opencv-python
 pip install requests
 ```
 
-- Jittor
+#### Jittor
 
-提供docker安装，其他安装方式见 [Jittor](https://github.com/Jittor/jittor) 官网。
+docker安装：
 
 ```bash
 docker pull jittor/jittor-cuda:11.1-16.04
+```
+
+anaconda 安装：
+
+```bash
+conda create -n jittor python=3.8
+conda activate jittor
+conda install pywin32
+pip install jittor
+# 测试是否安装成功
+python -m jittor.test.test_core
+python -m jittor.test.test_example
+python -m jittor.test.test_cudnn_op
 ```
 
 ### 使用方法
@@ -68,12 +81,16 @@ python coco_validation.py --coco_path ./coco --model <your_model_path>.pt
 
 ### 对齐验证
 
-### 训练模型
 
-项目提供训练完成的 RetinaNet 模型：
 
-| 模型               | 下载链接 |
-| ------------------ | -------- |
-| Pytorch + ResNet50 | https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view |
-|Jittor + ResNet50||
+### 相关资源
+
+
+
+| 链接                                                         | 说明                                                         |
+| ------------------------------------------------------------ | ------------------------------------------------------------ |
+| https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view | Pytorch + ResNet50 训练模型                                  |
+|                                                              | Jittor + ResNet50 训练模型                                   |
+| https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      | 抽取自coco2017的小数据集，数据集合结构与coco2017一致，用于快速测试项目功能。 |
+
 
