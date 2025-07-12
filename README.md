@@ -92,37 +92,38 @@ python prepare_data.py
 
 或者您可以使用我们的 [tiny_coco数据集](https://www.kaggle.com/datasets/weipengchao/tiny-coco1k) 先跑通一遍流程。
 
-#### pytorch-retinanet
+#### 模型训练
 
-- 模型训练
-
-```bash
-python train.py --dataset coco --coco_path ./coco --depth 50  --epochs 35 --sample_size 10000 --batch_size 32
-```
-
-训练得到：`./logs/train_log.csv`、`./logs/val_logs/csv`、`./logs/model.pt`。
-
-- 验证
+在各自根目录执行：
 
 ```bash
-python coco_validation.py --coco_path ./coco --model <your_model_path>.pt
+python train.py --dataset coco --coco_path ./coco --depth 50  --epochs 5 --batch_size 2
 ```
 
-#### jittor-retinanet
+#### 模型验证
 
-- 模型训练
-- 验证
+在各自根目录执行：
+
+```bash
+python coco_validation.py --coco_path ./coco --model <your_model_path>
+```
 
 ### 训练结果
+
+详见于训练日志。
+
+| framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
+| --------- | -------- | ------ | ----------- | ----------------- |
+| pytorch   | resnet50 | 5      |             |                   |
+| jittor    | resnet50 | 5      | 2           | 0.250             |
+|           |          |        |             |                   |
 
 ### 对齐验证
 
 ### 相关资源
 
-| 链接                                                         | 说明                                                         |
-| ------------------------------------------------------------ | ------------------------------------------------------------ |
-| https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view | Pytorch + ResNet50 训练模型                                  |
-|                                                              | Jittor + ResNet50 训练模型                                   |
-| https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      | 抽取自coco2017的小数据集，数据集结构与coco2017一致，用于快速测试项目功能 |
-
-
+| 说明                        | 链接                                                         |
+| --------------------------- | ------------------------------------------------------------ |
+| pytorch + resnet50 训练模型 | https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view |
+| jittor + resnet50 训练模型  | https://drive.google.com/file/d/1NPznVTl7dpHWaFs9ncLAlwUIKdOusrar/view?usp=drive_link |
+| tiny_coco 数据集            | https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      |
