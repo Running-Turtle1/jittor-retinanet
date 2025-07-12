@@ -3,7 +3,6 @@ import os
 import csv
 import time
 # 移除了针对 PyTorch 的 warnings 导入，因为已不再需要
-
 import numpy as np
 from jittor.lr_scheduler import ReduceLROnPlateau
 from jittor.dataset.dataset import Dataset
@@ -56,14 +55,6 @@ def main(args = None):
         transform = transform.Compose([Normalizer(), Resizer()])
     )
 
-    dataloader_val = CocoDataset(
-        root_dir = './tiny_coco',
-        set_name = 'val2017',
-        batch_size = 1,
-        shuffle = True,
-        transform = transform.Compose([Normalizer(), Resizer()])
-    )
-
     # 构建模型
     retinanet = model.resnet50(num_classes = dataloader_train.num_classes(), pretrained = True)
     retinanet.training = True
@@ -72,8 +63,6 @@ def main(args = None):
     scheduler = ReduceLROnPlateau(optimizer, patience = 3, verbose = True)
 
     print('Num training images:', dataloader_train.total_len)
-    # print(optimizer.param_groups)
-    # return
     # 训练循环
     for epoch_num in range(args.epochs):
         print(f'Start {epoch_num} epoch!')
@@ -86,10 +75,7 @@ def main(args = None):
         epoch_losses = []
 
 
-
         for iter_num, data in enumerate(dataloader_train):
-
-
             iter_start = time.time()
             cls_loss, reg_loss = retinanet([data['img'], data['annot']])
             cls_loss = cls_loss.mean()
@@ -114,13 +100,7 @@ def main(args = None):
                   f" total_loss {total_loss:.4f} | lr {lr:.1e} |"
                   f" {img_per_sec:.1f} img/s")
 
-        # 验证
-        # val_start = time.time()
-        # # 由于移除了 CSV 参数，这里假定只处理 COCO
-        # mAP = coco_eval.evaluate_coco(dataloader_val, retinanet)
-        # val_time = time.time() - val_start
-        # val_logger.writerow([epoch_num, mAP, round(val_time, 4)])
-        # print(f"Val Epoch {epoch_num} | mAP {mAP:.3f} | time {val_time:.2f}s")
+        # 验证：通过 coco_validation 验证
 
         # 更新学习率
         if epoch_losses:
@@ -140,5 +120,4 @@ def main(args = None):
 
 
 if __name__ == '__main__':
-
     main()

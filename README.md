@@ -1,6 +1,6 @@
 # jittor-retinanet
 
-本项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 复现经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)，对齐并评估了 PyTorch 与 Jittor 两种实现方式在 **COCO 2017** 数据集上采样部分数据进行训练的性能与精度表现。
+本项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 复现经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)，对齐并评估了 PyTorch 与 Jittor 两种实现方式在 **COCO 2017** 数据集上的性能与精度表现。
 
 <div style="display: flex; flex-wrap: wrap; gap: 10px;">
   <img src="./tools/img/image_66.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
@@ -18,11 +18,9 @@
 ### 项目内容
 
 
-- 基于 [PyTorch 实现](https://github.com/yhenon/pytorch-retinanet)，使用预训练 ResNet50 采样 10,000 张图片进行训练，同时记录训练日志和评估日志；
+- 基于 [PyTorch 实现](https://github.com/yhenon/pytorch-retinanet)，使用预训练 ResNet50 进行训练，同时记录训练日志和评估日志；
 - 使用 **Jittor 框架** 对齐 PyTorch 实现，并在相同配置下进行训练和评估；
 - 对 **两种版本（PyTorch / Jittor）** 的训练性能、检测精度（mAP）、收敛速度和损失变化进行对比分析。
-
-<可视化 part>
 
 ### 项目结构
 
@@ -119,15 +117,25 @@ python train.py --dataset coco --coco_path ./coco --depth 50  --epochs 5 --batch
 python coco_validation.py --coco_path ./coco --model <your_model_path>
 ```
 
+#### 可视化
+
+在 jittor-retinanet 目录执行：
+
+```bash
+python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_model_path>
+```
+
+或者直接[下载](https://drive.google.com/drive/folders/1uUDtQOu3O3s7rrGU3qecfho8HZqWsGYx?usp=drive_link)查看我们的可视化结果。
+
 ### 训练结果
 
 详见于训练日志。
 
 | framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
 | --------- | -------- | ------ | ----------- | ----------------- |
-| pytorch   | resnet50 | 5      |             |                   |
+| pytorch   | resnet50 | 5      | 2           |                   |
 | jittor    | resnet50 | 5      | 2           | 0.250             |
-|           |          |        |             |                   |
+
 
 ### 对齐验证
 
@@ -138,3 +146,4 @@ python coco_validation.py --coco_path ./coco --model <your_model_path>
 | pytorch + resnet50 训练模型 | https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view |
 | jittor + resnet50 训练模型  | https://drive.google.com/file/d/1NPznVTl7dpHWaFs9ncLAlwUIKdOusrar/view?usp=drive_link |
 | tiny_coco 数据集            | https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      |
+|tiny_coco 评测集全部可视化结果|https://drive.google.com/drive/folders/1uUDtQOu3O3s7rrGU3qecfho8HZqWsGYx?usp=drive_link|

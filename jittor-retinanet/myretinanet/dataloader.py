@@ -249,15 +249,18 @@ class Normalizer(object):
         return {'img': ((image.astype(np.float32) - self.mean) / self.std), 'annot': annots}
 
 
-class UnNormalizer(object):
-    def __init__(self, mean = (0.485, 0.456, 0.406), std = (0.229, 0.224, 0.225)):
-        self.mean = mean
-        self.std = std
+
+class UnNormalizer:
+    def __init__(self, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
+        self.mean = jt.array(mean).reshape(-1, 1, 1)  # shape [3,1,1]
+        self.std = jt.array(std).reshape(-1, 1, 1)    # shape [3,1,1]
 
     def __call__(self, tensor):
-        for t, m, s in zip(tensor, self.mean, self.std):
-            t.mul_(s).add_(m)
-        return tensor
+        """
+        tensor: jt.Var, shape [3, H, W], normalized image tensor
+        returns: jt.Var, unnormalized tensor
+        """
+        return tensor * self.std + self.mean
 
 # Sampler
 class AspectRatioBasedSampler():
@@ -320,28 +323,3 @@ class AspectRatioBasedSampler():
         return groups
 
 
-
-from jittor import transform
-
-
-# train_loader = CocoDataset(
-#     root_dir = '../coco',
-#     set_name = 'train2017',
-#     batch_size = 16,
-#     shuffle = True,
-#     transform = transform.Compose([Normalizer(), Resizer()])
-# )
-#
-# # print(type(train_loader.batch_size))
-#
-# # print(1)
-# for i, data in enumerate(train_loader):
-#     print(data['img'].shape)
-#     print(data['img'].unsqueeze(dim=0).shape)
-#     # print(data['img'].unsqueeze(dim=0) == jt.unsqueeze(data['img'], dim=0))
-#     if i==0:
-#         break
-# print(1)
-# x = jt.array([1,2,3,4])
-# print(jt.unsqueeze(x, 0))
-# print(x.unsqueeze(dim=0))
