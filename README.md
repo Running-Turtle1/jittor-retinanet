@@ -2,18 +2,7 @@
 
 本项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 复现经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)，对齐并评估了 PyTorch 与 Jittor 两种实现方式在 **COCO 2017** 数据集上的性能与精度表现。
 
-<div style="display: flex; flex-wrap: wrap; gap: 10px;">
-  <img src="./tools/img/image_66.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_129.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_22.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_85.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_132.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_90.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_34.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-  <img src="./tools/img/image_86.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-    <img src="./tools/img/image_5.jpg" style="width: calc(50% - 5px); height: 200px; object-fit: cover;">
-</div>
-
+![pic_show](./tools/img/pic_show.png)
 
 ### 项目内容
 
