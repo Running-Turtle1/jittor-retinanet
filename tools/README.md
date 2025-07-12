@@ -1,2 +1,3 @@
 - `download_coco2017.py`：用于下载 coco2017 数据集
 - `tiny_coco_creator`：用于从 coco2017 数据集中抽取自定义大小数据集
+- `img`：部分可视化结果
