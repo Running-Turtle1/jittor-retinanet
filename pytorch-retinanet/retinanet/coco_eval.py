@@ -53,7 +53,7 @@ def evaluate_coco(dataset, model, threshold = 0.05):
 
         if not len(results):
             model.train()
-            return
+            return 0.0
 
     # write output
     with open(f'{dataset.set_name}_bbox_results.json', 'w') as f:
@@ -74,3 +74,8 @@ def evaluate_coco(dataset, model, threshold = 0.05):
 
 
     return coco_eval.stats[0]  # 返回主指标 mAP (IoU=0.50:0.95)
+
+x = torch.tensor([[1, 2], [3, 4], [5, 6]])
+print(x.shape)
+x.unsqueeze(dim=0)
+print(x.shape)

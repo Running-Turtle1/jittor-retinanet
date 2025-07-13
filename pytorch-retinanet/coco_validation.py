@@ -22,8 +22,8 @@ def main(args = None):
     parser = argparse.ArgumentParser(description = 'Simple training script for training a RetinaNet network.')
 
     # 添加参数
-    parser.add_argument('--coco_path', help = 'Path to COCO directory')
-    parser.add_argument('--model_path', help = 'Path to model', type = str)
+    parser.add_argument('--coco_path', default = './coco', help = 'Path to COCO directory')
+    parser.add_argument('--model_path', default = 'tiny_coco_retinanet_epoch4.pt', help = 'Path to model', type = str)
 
     parser = parser.parse_args(args)
 
