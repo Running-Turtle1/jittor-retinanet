@@ -118,7 +118,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 ### 训练结果
 
-详见于训练日志。
+详见于[pytorch-logs](https://github.com/Running-Turtle1/jittor-retinanet/tree/main/pytorch-retinanet/logs) 和 [Jittor-logs](https://github.com/Running-Turtle1/jittor-retinanet/tree/main/jittor-retinanet/logs)。
 
 | framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
 | --------- | -------- | ------ | ----------- | ----------------- |
