@@ -30,7 +30,7 @@
 |                                         |                        |               MIG M. |
 |=========================================+========================+======================|
 |   0  NVIDIA A10                     On  |   00000000:00:06.0 Off |                    0 |
-|  0%   36C    P0             16W /  150W |     4MiB /  23028MiB |      0%      Default |
+|  0%   36C    P0             16W /  150W |       4MiB /  23028MiB |      0%      Default |
 |                                         |                        |                  N/A |
 +-----------------------------------------+------------------------+----------------------+
 |   1  NVIDIA A10                     On  |   00000000:00:07.0 Off |                    0 |
@@ -122,7 +122,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 | framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
 | --------- | -------- | ------ | ----------- | ----------------- |
-| pytorch   | resnet50 | 5      | 2           |                   |
+| pytorch   | resnet50 | 5      | 2           | 0.295             |
 | jittor    | resnet50 | 5      | 2           | 0.250             |
 
 
@@ -132,7 +132,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 | 说明                        | 链接                                                         |
 | --------------------------- | ------------------------------------------------------------ |
-| pytorch + resnet50 训练模型 | https://drive.google.com/file/d/181qIwc7JePD6m8eJ4O2k7uqVfSiFy4Zg/view |
+| pytorch + resnet50 训练模型 | https://drive.google.com/file/d/1i7K8RT9BuuMspP-OTTRvQBcAk2d9dq2o/view?usp=drive_link |
 | jittor + resnet50 训练模型  | https://drive.google.com/file/d/1NPznVTl7dpHWaFs9ncLAlwUIKdOusrar/view?usp=drive_link |
 | tiny_coco 数据集            | https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      |
 |tiny_coco 评测集全部可视化结果|https://drive.google.com/drive/folders/1uUDtQOu3O3s7rrGU3qecfho8HZqWsGYx?usp=drive_link|
