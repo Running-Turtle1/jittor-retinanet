@@ -206,7 +206,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 #### 精度对比
 
-![mAP](.\tools\contrast\mAP.png)
+![mAP](./tools/contrast/mAP.png)
 
 - 两组模型的 mAP 均不断提升，模型的检测性能在不断改善
   - pytorch-retinanet 从 0.207 提升到 0.295，提升了约 0.088
