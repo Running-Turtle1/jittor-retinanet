@@ -14,7 +14,47 @@
 ### 项目结构
 
 ```wiki
-
+jittor-retinanet/
+├── LICENSE
+├── README.md                           # 项目说明文件
+├── jittor-retinanet/                   # 使用 Jittor 实现 RetinaNet 的主代码
+│   ├── coco_validation.py              # 在 COCO 数据集上进行验证评估
+│   ├── logs/                           # 保存训练/验证日志
+│   │   ├── train_log.csv
+│   │   └── val_log.csv
+│   ├── myretinanet/
+│   │   └── dataloader.py               # 自定义数据加载器
+│   ├── myutils/
+│   │   └── optim.py                    # 自定义优化器工具
+│   ├── retinanet/                      # RetinaNet 主体模块
+│   │   ├── anchors.py                  # Anchor生成器
+│   │   ├── coco_eval.py                # COCO API 评估封装
+│   │   ├── dataloader.py               # COCO 格式数据加载器
+│   │   ├── losses.py                   # Focal Loss 等损失函数
+│   │   ├── model.py                    # RetinaNet 主干网络 + FPN + 子网络
+│   │   ├── oid_dataset.py              # OpenImages 数据集支持（可选）
+│   │   └── utils.py                    # 通用辅助函数
+│   ├── train.py                        # Jittor 训练主脚本
+│   └── visualize.py                    # 可视化结果检测框
+├── pytorch-retinanet/                  # PyTorch 实现部分
+│   ├── coco_validation.py
+│   ├── retinanet/                   
+│   │   ├── anchors.py
+│   │   ├── coco_eval.py
+│   │   ├── dataloader.py
+│   │   ├── losses.py
+│   │   ├── model.py
+│   │   ├── oid_dataset.py
+│   │   └── utils.py
+│   └── train.py                        # PyTorch 训练主脚本
+└── tools/
+    ├── download_coco2017.py            # COCO 数据下载脚本
+    ├── img/                            # 项目展示用的示意图片
+    └── tiny_coco_creator/              # 用于创建小样本 COCO 数据集
+        ├── addInfo.py
+        ├── dataCreator.py
+        ├── splitData.py
+        └── tiny_coco_1k.json         
 ```
 
 ### 环境配置
@@ -85,10 +125,27 @@ python -m jittor.test.test_cudnn_op
 下载 coco 2017 数据集：
 
 ```python
-python prepare_data.py
+python /tools/download_coco2017.py
 ```
 
 或者您可以使用我们的 [tiny_coco数据集](https://www.kaggle.com/datasets/weipengchao/tiny-coco1k) 先跑通一遍流程。
+
+然后将数据集按照如下结构组织：
+
+```bash
+<pytorch/jittor>-retinanet/
+└── coco/
+    ├── annotations/
+    │   ├── instances_train2017.json
+    │   └── instances_val2017.json
+    └── images/
+        ├── train2017/
+        │   ├── 000000000009.jpg
+        │   └── ...
+        └── val2017/
+            ├── 000000000139.jpg
+            └── ...
+```
 
 #### 模型训练
 
