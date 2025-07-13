@@ -9,7 +9,7 @@
 
 - 基于 [PyTorch 实现](https://github.com/yhenon/pytorch-retinanet)，使用预训练 ResNet50 进行训练，同时记录训练日志和评估日志；
 - 使用 **Jittor 框架** 对齐 PyTorch 实现，并在相同配置下进行训练和评估；
-- 对 **两种版本（PyTorch / Jittor）** 的训练性能、检测精度（mAP）、收敛速度和损失变化进行对比分析。
+- 对 **两种版本（PyTorch / Jittor）** 的训练性能、损失变化和检测精度进行对比分析。
 
 ### 项目结构
 
@@ -182,8 +182,36 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 | pytorch   | resnet50 | 5      | 2           | 0.295             |
 | jittor    | resnet50 | 5      | 2           | 0.250             |
 
-
 ### 对齐验证
+
+#### 训练性能对比
+
+![](./tools/contrast/total_training_time_per_epoch_comparison.png)
+
+- PyTorch 平均训练时间: 6772.70 秒/epoch
+
+- Jittor  平均训练时间: 9565.99 秒/epoch
+- 在本实验中，Jittor 的训练速度比 PyTorch 慢了约 **41.2%**
+
+#### 损失变化对比
+
+![](./tools/contrast/loss_contrast.png)
+
+- 在 0-3 个 epoch 中，Jittor 的总损失比 PyTorch 略高
+- 到第4个 epoch，Jittor 实现了 **反超**，损失更低
+
+![](./tools/contrast/epoch_loss.png)
+
+- 相较于 Pytorch 存在不稳定峰值，Jittor 损失曲线更平稳，波动范围小
+
+#### 精度对比
+
+![mAP](.\tools\contrast\mAP.png)
+
+- 两组模型的 mAP 均不断提升，模型的检测性能在不断改善
+  - pytorch-retinanet 从 0.207 提升到 0.295，提升了约 0.088
+  - jittor-retinanet 从 0.149 提升到 0.25，提升了约 0.101
+- 两者的 mAP 增长趋势大致相同
 
 ### 相关资源
 
