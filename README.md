@@ -211,7 +211,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 - 两组模型的 mAP 均不断提升，模型的检测性能在不断改善
   - pytorch-retinanet 从 0.207 提升到 0.295，提升了约 0.088
   - jittor-retinanet 从 0.149 提升到 0.25，提升了约 0.101
-- 两者的 mAP 增长趋势大致相同
+- 两者的 mAP 增长趋势大致相同，无显著差异
 
 ### 相关资源
 
