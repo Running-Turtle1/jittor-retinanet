@@ -179,39 +179,39 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 | framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
 | --------- | -------- | ------ | ----------- | ----------------- |
-| pytorch   | resnet50 | 5      | 2           | 0.295             |
-| jittor    | resnet50 | 5      | 2           | 0.250             |
+| jittor    | resnet50 | 5      | 2           | 0.295             |
+| pytorch   | resnet50 | 5      | 2           | 0.250             |
 
 ### 对齐验证
 
 #### 训练性能对比
 
-![](./tools/contrast/total_training_time_per_epoch_comparison.png)
+![](./visualization/Comparison of Train Time.png)
 
-- PyTorch 平均训练时间: 6772.70 秒/epoch
+- Jittor 平均训练时间: 6772.70 秒/epoch
 
-- Jittor  平均训练时间: 9565.99 秒/epoch
-- 在本实验中，Jittor 的训练速度比 PyTorch 慢了约 **41.2%**
+- PyTorch 平均训练时间: 9565.99 秒/epoch
+- 在本实验中，PyTorch 的训练速度比 Jittor 慢了约 **41.2%**
 
 #### 损失变化对比
 
-![](./tools/contrast/loss_contrast.png)
+![](./visualization/loss_contrast.png)
 
 - 在 0-3 个 epoch 中，Jittor 的总损失比 PyTorch 略高
 - 到第4个 epoch，Jittor 实现了 **反超**，损失更低
 
-![](./tools/contrast/epoch_loss.png)
+![](.\visualization\epoch_total_loss.png)
 
 - 相较于 Pytorch 存在不稳定峰值，Jittor 损失曲线更平稳，波动范围小
 
 #### 精度对比
 
-![mAP](./tools/contrast/mAP.png)
+![mAP](./visualization/mAP Comparison between Pytorch and Jittor.png)
 
 - 两组模型的 mAP 均不断提升，模型的检测性能在不断改善
   - pytorch-retinanet 从 0.207 提升到 0.295，提升了约 0.088
-  - jittor-retinanet 从 0.149 提升到 0.25，提升了约 0.101
-- 两者的 mAP 增长趋势大致相同，无显著差异
+  - jittor-retinanet 从 0.199 提升到 0.30，提升了约 0.101
+- jittor 对模型的训练会得到略高的 mAP，总体来看实现了对齐
 
 ### 相关资源
 
