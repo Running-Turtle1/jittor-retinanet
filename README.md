@@ -200,7 +200,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 - 在 0-3 个 epoch 中，Jittor 的总损失比 PyTorch 略高
 - 到第4个 epoch，Jittor 实现了 **反超**，损失更低
 
-![](.\visualization\epoch_total_loss.png)
+![](./visualization/epoch_total_loss.png)
 
 - 相较于 Pytorch 存在不稳定峰值，Jittor 损失曲线更平稳，波动范围小
 
