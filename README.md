@@ -186,7 +186,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 #### 训练性能对比
 
-![](./visualization/Comparison of Train Time.png)
+![](./visualization/Train.png)
 
 - Jittor 平均训练时间: 6772.70 秒/epoch
 
@@ -206,7 +206,7 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 #### 精度对比
 
-![mAP](./visualization/mAP Comparison between Pytorch and Jittor.png)
+![mAP](./visualization/mAP_Comparison.png)
 
 - 两组模型的 mAP 均不断提升，模型的检测性能在不断改善
   - pytorch-retinanet 从 0.207 提升到 0.295，提升了约 0.088
