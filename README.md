@@ -185,8 +185,8 @@ UPD IN 2025/08/16，增加了更多的 epochs 进行训练。
 
 | framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
 | --------- | -------- | ------ | ----------- | ----------------- |
-| jittor    | resnet50 | 5      | 2           | 0.295             |
-| pytorch   | resnet50 | 5      | 2           | 0.250             |
+| jittor    | resnet50 | 35      | 2           | 0.382             |
+| pytorch   | resnet50 | 35      | 2           | 0.342            |
 
 ### 对齐验证
 
