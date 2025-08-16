@@ -1,15 +1,19 @@
 # jittor-retinanet
 
-本项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 复现经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)，对齐并评估了 PyTorch 与 Jittor 两种实现方式在 **COCO 2017** 数据集上的性能与精度表现。
+该项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 复现经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)，基于 COCO2017 数据集进行训练。此外，项目针对原始的 Focal Loss 进行了创新性改进，提出了一种新的损失函数——**Dynamic Logit Focal Loss**。
 
 ![pic_show](./tools/img/pic_show.png)
 
-### 项目内容
+### 模型介绍
 
+- **Retinanet**：RetinaNet是由Facebook AI Research团队在2017年提出的一种目标检测算法。与传统的目标检测算法不同，RetinaNet特别关注类别不平衡问题，尤其是在面对背景和前景类别数量差异巨大的场景时，表现尤为突出。它通过一种叫做焦点损失（Focal Loss）的创新技术，解决了目标检测中常见的类别不平衡问题。
 
-- 基于 [PyTorch 实现](https://github.com/yhenon/pytorch-retinanet)，使用预训练 ResNet50 进行训练，同时记录训练日志和评估日志；
-- 使用 **Jittor 框架** 对齐 PyTorch 实现，并在相同配置下进行训练和评估；
-- 对 **两种版本（PyTorch / Jittor）** 的训练性能、损失变化和检测精度进行对比分析。
+  ![pic_show](./tools/img/RetinaNet.png)
+- **Network Architecture**：RetinaNet是由Resnet、FPN为主要架构，detection部分则是由两个FCN 子网路组成，分别用于预测分类及边缘框识别。
+- **Focal Loss**：Retinanet 通过 Focal Loss，解决了目标检测中常见的类别不平衡问题。
+     ![pic_show](./tools/img/FL.png)
+- **Dynamic Logit Focal Loss**：在 logit 空间计算 loss，提高数值稳定性，在此基础上，让模型根据 logit 动态调整调制因子，更好指导模型学习。
+
 
 ### 项目结构
 
@@ -177,6 +181,8 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 详见于[pytorch-logs](https://github.com/Running-Turtle1/jittor-retinanet/tree/main/pytorch-retinanet/logs) 和 [Jittor-logs](https://github.com/Running-Turtle1/jittor-retinanet/tree/main/jittor-retinanet/logs)。
 
+UPD IN 2025/08/16，增加了更多的 epochs 进行训练。
+
 | framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
 | --------- | -------- | ------ | ----------- | ----------------- |
 | jittor    | resnet50 | 5      | 2           | 0.295             |
@@ -186,32 +192,45 @@ python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_mo
 
 #### 训练性能对比
 
+分析前 5 个 epoch：
+
 ![](./visualization/Train.png)
 
-- Jittor 平均训练时间: 6772.70 秒/epoch
+- Jittor 平均训练时间: 6772.70 秒/epoch；PyTorch 平均训练时间: 8,884.86 秒/epoch
 
-- PyTorch 平均训练时间: 9565.99 秒/epoch
-- 在本实验中，PyTorch 的训练速度比 Jittor 慢了约 **41.2%**
+- 在本实验中，PyTorch 的训练速度比 Jittor 快了 **~31.2%**。
 
 #### 损失变化对比
 
+分析前 5 个 epoch：
+
 ![](./visualization/loss_contrast.png)
 
-- 在 0-3 个 epoch 中，Jittor 的总损失比 PyTorch 略高
-- 到第4个 epoch，Jittor 实现了 **反超**，损失更低
+- 在 0-3 个 epoch 中，Jittor 的总损失比 PyTorch 略高，到第4个 epoch，Jittor 实现了 **反超**，损失更低
+
+#### 训练稳定性
+
+分析前 5 个 epoch：
 
 ![](./visualization/epoch_total_loss.png)
 
-- 相较于 Pytorch 存在不稳定峰值，Jittor 损失曲线更平稳，波动范围小
+![](./visualization/CV.png)
+
+- 相较于 Pytorch 存在不稳定峰值，Jittor 损失曲线更平稳，波动范围小，变异系数大概下降了 **~10%**。
 
 #### 精度对比
 
 ![mAP](./visualization/mAP_Comparison.png)
 
-- 两组模型的 mAP 均不断提升，模型的检测性能在不断改善
-  - pytorch-retinanet 从 0.207 提升到 0.295，提升了约 0.088
-  - jittor-retinanet 从 0.199 提升到 0.30，提升了约 0.101
-- jittor 对模型的训练会得到略高的 mAP，总体来看实现了对齐
+- 相较于 PyTorch 的实现，Jittor 版本的 RetinaNet 在 COCO mAP@[.5:.95] 指标上达到了 **~0.38**，精度提升了 **11%**。
+
+### jittor的通道数；
+
+- **backbone 替换**：论文中使用Resnet50以及Resnet101，改用更深的Resnet152以及其他变体、使用ResNeXt模型、或者使用Swin Transformer 或 EfficientNet 等网络；
+- **FPN改进**：论文中用了p3~p7的尺度，可以增加尺度提高准确率；也可以调整FPN的通道数；
+- **Backbone替换**：论文中使用Resnet50以及Resnet101，改用更深的Resnet152以及其他变体、使用ResNeXt模型、或者使用Swin Transformer 或 EfficientNet 等网络；
+- **FPN改进**：FPN改进：论文中用了p3~p7的尺度，可以增加尺度提高准确率；也可以调整FPN的通道数；
+- **关于FPN中FCN的使用**：可以增加提取的步骤，在通过backbone提取的特征层次之间或者是抽取特征之后，加入额外卷积模型进行更深层次的加工。
 
 ### 相关资源
 
