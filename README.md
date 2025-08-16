@@ -224,10 +224,8 @@ UPD IN 2025/08/16，增加了更多的 epochs 进行训练。
 
 - 相较于 PyTorch 的实现，Jittor 版本的 RetinaNet 在 COCO mAP@[.5:.95] 指标上达到了 **~0.38**，精度提升了 **11%**。
 
-### jittor的通道数；
+### 优化建议
 
-- **backbone 替换**：论文中使用Resnet50以及Resnet101，改用更深的Resnet152以及其他变体、使用ResNeXt模型、或者使用Swin Transformer 或 EfficientNet 等网络；
-- **FPN改进**：论文中用了p3~p7的尺度，可以增加尺度提高准确率；也可以调整FPN的通道数；
 - **Backbone替换**：论文中使用Resnet50以及Resnet101，改用更深的Resnet152以及其他变体、使用ResNeXt模型、或者使用Swin Transformer 或 EfficientNet 等网络；
 - **FPN改进**：FPN改进：论文中用了p3~p7的尺度，可以增加尺度提高准确率；也可以调整FPN的通道数；
 - **关于FPN中FCN的使用**：可以增加提取的步骤，在通过backbone提取的特征层次之间或者是抽取特征之后，加入额外卷积模型进行更深层次的加工。
