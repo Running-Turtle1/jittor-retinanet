@@ -162,3 +162,7 @@ Peak memory diff (Jittor vs PyTorch): 101.74%
 总结:
 - Jittor: JIT compile, operator fusion, lazy execution, targets to computation efficiency
 - Pytorch: eager execution, 成熟的内存管理，稳定算子实现，targets to 稳定与生态
+
+----
+
+We acknowledge [Dun Liang (CJLD)](https://cjld.github.io/) for his great work on the Jittor deep learning framework.
