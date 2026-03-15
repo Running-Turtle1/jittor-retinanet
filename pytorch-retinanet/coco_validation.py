@@ -23,7 +23,7 @@ def main(args = None):
 
     # 添加参数
     parser.add_argument('--coco_path', default = './coco', help = 'Path to COCO directory')
-    parser.add_argument('--model_path', default = 'tiny_coco_retinanet_epoch4.pt', help = 'Path to model', type = str)
+    parser.add_argument('--model_path', default = './checkpoints/model_final.pt', help = 'Path to model', type = str)
 
     parser = parser.parse_args(args)
 

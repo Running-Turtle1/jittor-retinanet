@@ -1,98 +1,16 @@
 # jittor-retinanet
 
-该项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 复现经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)，基于 COCO2017 数据集进行训练。此外，项目针对原始的 Focal Loss 进行了创新性改进，提出了一种新的损失函数——**Dynamic Logit Focal Loss**。
+本项目基于 [Jittor 框架](https://github.com/Jittor/jittor) 实现了经典目标检测模型 [RetinaNet](https://arxiv.org/pdf/1708.02002v2.pdf)。
 
-![pic_show](./tools/img/pic_show.png)
-
-### 模型介绍
-
-- **Retinanet**：RetinaNet是由Facebook AI Research团队在2017年提出的一种目标检测算法。与传统的目标检测算法不同，RetinaNet特别关注类别不平衡问题，尤其是在面对背景和前景类别数量差异巨大的场景时，表现尤为突出。它通过一种叫做焦点损失（Focal Loss）的创新技术，解决了目标检测中常见的类别不平衡问题。
-
-  ![pic_show](./tools/img/RetinaNet.png)
-- **Network Architecture**：RetinaNet是由Resnet、FPN为主要架构，detection部分则是由两个FCN 子网路组成，分别用于预测分类及边缘框识别。
-- **Focal Loss**：Retinanet 通过 Focal Loss，解决了目标检测中常见的类别不平衡问题。
-     ![pic_show](./tools/img/FL.png)
-- **Dynamic Logit Focal Loss**：在 logit 空间计算 loss，提高数值稳定性，在此基础上，让模型根据 logit 动态调整调制因子，更好指导模型学习。
+实验采用 COCO2017 子集进行训练，并对 Jittor 与 Pytorch 两种框架在训练过程中的性能表现进行了对比分析。
 
 
-### 项目结构
 
-```wiki
-jittor-retinanet/
-├── LICENSE
-├── README.md
-├── jittor-retinanet/
-│   ├── coco_validation.py
-│   ├── logs/
-│   │   ├── train_log.csv
-│   │   └── val_log.csv
-│   ├── myretinanet/
-│   │   └── dataloader.py
-│   ├── myutils/
-│   │   └── optim.py
-│   ├── retinanet/
-│   │   ├── anchors.py
-│   │   ├── coco_eval.py
-│   │   ├── dataloader.py
-│   │   ├── losses.py
-│   │   ├── model.py
-│   │   ├── oid_dataset.py
-│   │   └── utils.py
-│   ├── train.py
-│   └── visualize.py
-├── pytorch-retinanet/
-│   ├── coco_validation.py
-│   ├── retinanet/
-│   │   ├── anchors.py
-│   │   ├── coco_eval.py
-│   │   ├── dataloader.py
-│   │   ├── losses.py
-│   │   ├── model.py
-│   │   ├── oid_dataset.py
-│   │   └── utils.py
-│   └── train.py
-└── tools/
-    ├── download_coco2017.py
-    ├── img/
-    └── tiny_coco_creator/
-        ├── addInfo.py
-        ├── dataCreator.py
-        ├── splitData.py
-        └── tiny_coco_1k.json
-```
 
-### 环境配置
+## 环境配置
 
-#### 硬件环境
 
-```bash
-+-----------------------------------------------------------------------------------------+
-| NVIDIA-SMI 550.90.07              Driver Version: 550.90.07      CUDA Version: 12.4     |
-|-----------------------------------------+------------------------+----------------------+
-| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
-| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
-|                                         |                        |               MIG M. |
-|=========================================+========================+======================|
-|   0  NVIDIA A10                     On  |   00000000:00:06.0 Off |                    0 |
-|  0%   36C    P0             16W /  150W |       4MiB /  23028MiB |      0%      Default |
-|                                         |                        |                  N/A |
-+-----------------------------------------+------------------------+----------------------+
-|   1  NVIDIA A10                     On  |   00000000:00:07.0 Off |                    0 |
-|  0%   35C    P8             15W /  150W |       4MiB /  23028MiB |      0%      Default |
-|                                         |                        |                  N/A |
-+-----------------------------------------+------------------------+----------------------+
-|   2  NVIDIA A10                     On  |   00000000:00:08.0 Off |                    0 |
-|  0%   37C    P8             16W /  150W |       4MiB /  23028MiB |      0%      Default |
-|                                         |                        |                  N/A |
-+-----------------------------------------+------------------------+----------------------+
-|   3  NVIDIA A10                     On  |   00000000:00:09.0 Off |                    0 |
-|  0%   34C    P8             15W /  150W |       4MiB /  23028MiB |      0%      Default |
-|                                         |                        |                  N/A |
-+-----------------------------------------+------------------------+----------------------+
-
-```
-
-#### Pytorch
+### Pytorch
 
 ```bash
 pip install pandas
@@ -101,7 +19,7 @@ pip install opencv-python
 pip install requests
 ```
 
-#### Jittor
+### Jittor
 
 docker安装：
 
@@ -109,57 +27,44 @@ docker安装：
 docker pull jittor/jittor-cuda:11.1-16.04
 ```
 
+
 anaconda 安装：
 
 ```bash
 conda create -n jittor python=3.8
 conda activate jittor
-conda install pywin32
 pip install jittor
-# 测试是否安装成功
 python -m jittor.test.test_core
 python -m jittor.test.test_example
 python -m jittor.test.test_cudnn_op
 ```
 
-### 使用方法
 
-#### 数据准备
+## 数据准备
 
-下载 coco 2017 数据集：
+COCO 2017 数据集：
 
 ```python
-python /tools/download_coco2017.py
+python tools/download_coco2017.py
 ```
 
-或者您可以使用我们的 [tiny_coco数据集](https://www.kaggle.com/datasets/weipengchao/tiny-coco1k) 先跑通一遍流程。
+子集:
 
-然后将数据集按照如下结构组织：
-
-```bash
-<pytorch/jittor>-retinanet/
-└── coco/
-    ├── annotations/
-    │   ├── instances_train2017.json
-    │   └── instances_val2017.json
-    └── images/
-        ├── train2017/
-        │   ├── 000000000009.jpg
-        │   └── ...
-        └── val2017/
-            ├── 000000000139.jpg
-            └── ...
+```python
+python tools/create_tinyCOCO.py
 ```
 
-#### 模型训练
+或者直接[下载](https://www.kaggle.com/datasets/weipengchao/tiny-coco1k)。
+
+## 模型训练
 
 在各自根目录执行：
 
 ```bash
-python train.py --dataset coco --coco_path ./coco --depth 50  --epochs 5 --batch_size 2
+python train.py --coco_path ./coco --depth 50 --epochs 50 --batch_size 4
 ```
 
-#### 模型验证
+## 模型验证
 
 在各自根目录执行：
 
@@ -167,74 +72,93 @@ python train.py --dataset coco --coco_path ./coco --depth 50  --epochs 5 --batch
 python coco_validation.py --coco_path ./coco --model <your_model_path>
 ```
 
-#### 可视化
+## 实验现象
 
-在 jittor-retinanet 目录执行：
+均使用 NVIDIA RTX 3090 训练和验证。
+
+### Loss Curve
+
+训练初期 Jittor Loss 更高, 可能与以下因素有关: 1） 不用框架的默认初始化策略; 2) 数值计算实现差异 3) 优化器更新顺序或精度差异。
+
+不过随着训练进行, 两条曲线逐渐接近。
+
+![](tools/jittor_vs_pytorch_total_loss.png)
+
+### val_metrics
+
+在当前实验配置下, 两者差距整体较小, 训练效果处于相近水平。
+
+![](tools/jittor_vs_pytorch_val_metrics.png)
+
+### throughput
+
+从统计结果和曲线来看, Jittor 在训练阶段的吞吐量明显高于 Pytorch. Jittor 的平均吞吐量为 13.41 img/sec, Pytorch 为 10.72 img/sec, 提升约 25.17%。说明在当前实验环境中，Jittor 在训练效率上有一定优势。
 
 ```bash
-python visualize.py --dataset tiny_coco --coco_path ./tiny_coco --model <your_model_path>
+===== Jittor Throughput Stats =====
+Samples      : 10000
+Mean         : 13.4147
+Median       : 13.3100
+Max          : 22.7800
+Min          : 0.8300
+Last         : 13.0500
+
+===== PyTorch Throughput Stats =====
+Samples      : 10000
+Mean         : 10.7171
+Median       : 10.6300
+Max          : 16.5000
+Min          : 1.7800
+Last         : 10.5600
+
+Jittor vs PyTorch mean throughput diff: 25.17%
 ```
 
-或者直接[下载](https://drive.google.com/drive/folders/1uUDtQOu3O3s7rrGU3qecfho8HZqWsGYx?usp=drive_link)查看我们的可视化结果。
+![](tools/jittor_vs_pytorch_throughput.png)
 
-### 训练结果
+### gpu_mem
 
-详见于[pytorch-logs](https://github.com/Running-Turtle1/jittor-retinanet/tree/main/pytorch-retinanet/logs) 和 [Jittor-logs](https://github.com/Running-Turtle1/jittor-retinanet/tree/main/jittor-retinanet/logs)。
+从结果可以看出，Jittor 的显存占用显著高于 PyTorch。Jittor 平均显存占用约为 19.93 GB，而 PyTorch 约为 11.99 GB，平均高出约 66.20%；峰值显存占用则分别达到 24.23 GB 和 12.01 GB，峰值差异约为 101.74%。
 
-UPD IN 2025/08/16，增加了更多的 epochs 进行训练。
+不过，两种框架的显存曲线在训练初期完成分配后都很快趋于平稳，后续训练过程中未出现持续增长现象，说明两者在当前实验中均未出现明显的显存泄漏问题。综合来看，Jittor 在吞吐量上具有更高优势，但代价是更高的显存占用。
 
-| framework | backbone | epochs | bactch_size | coco mAP@[.5:.95] |
-| --------- | -------- | ------ | ----------- | ----------------- |
-| jittor    | resnet50 | 35      | 2           | 0.382             |
-| pytorch   | resnet50 | 35      | 2           | 0.342            |
+![](tools/jittor_vs_pytorch_gpu_mem.png)
 
-### 对齐验证
+```bash
+===== Jittor GPU Memory Stats =====
+Samples      : 10000
+Mean         : 19933.2958 MB
+Median       : 19987.0000 MB
+Max          : 24227.0000 MB
+Min          : 13073.0000 MB
+Last         : 19989.0000 MB
 
-#### 训练性能对比
+===== PyTorch GPU Memory Stats =====
+Samples      : 10000
+Mean         : 11993.8202 MB
+Median       : 12009.0000 MB
+Max          : 12009.0000 MB
+Min          : 8935.0000 MB
+Last         : 12009.0000 MB
 
-分析前 5 个 epoch：
+Mean memory diff (Jittor vs PyTorch): 66.20%
+Peak memory diff (Jittor vs PyTorch): 101.74%
+```
 
-![](./visualization/Train.png)
+## 现象分析
 
-- Jittor 平均训练时间: 6772.70 秒/epoch；PyTorch 平均训练时间: 8,884.86 秒/epoch
+1. Loss 趋势一致, 说明模型结构、优化器逻辑、数据 pipeline 一致，Jittor 实现是正确的。
 
-- 在本实验中，PyTorch 的训练速度比 Jittor 快了 **~31.2%**。
+2. 关于精度的细微差异，我们认为受以下角度影响: 1) 框架之间的数值实现差异: reduction 顺序、float 精度、cudnn kernel; 2) 算子实现差异: 例如 NMS、Focal Loss、Anchor Assignment 的实现细节差异 (未验证); 3) 目标检测本身的随机性: data augmentation、batch sampling、floating error。
 
-#### 损失变化对比
+3. Jittor 的更高吞吐量: Jittor 是 Just-in-Time Compilation + Lazy execution, Pytorch 是 eager execution. 以 `y = x * 2 + 3 ` 为例:
+- Pytoch 执行方式: `调用一个算子 -> CUDA Kernel -> 再调用下一个算子`, 每个操作都是独立 kernel, 可能执行为 `kernel1: multiply kernel2: add`。
+- Jittor 使用 lazy execution + JIT 编译: `Python graph -> 计算图 -> JIT 编译 -> 融合算子`, 上面的操作可能变成 : `kernel: y = x*2+3`。
 
-分析前 5 个 epoch：
+    这种 **operator Fusion** 能够减少 kernel launch，减少 gpu memory IO 并提高 gpu 利用率。 同时 Lazy execution 可以让 Jittor 做更多优化和算子融合，减少 py 的调度开销。
 
-![](./visualization/loss_contrast.png)
+4. 显存占用: 我们认为 Jittor 为了支持 JIT、op fusion 以及 lazy execution 等操作，会保留更多中间 tensor，导致计算占用显存更大。而 Pytorch 的显存管理经过多年优化非常成熟: `CUDA acching allocator, memory reuse, tensor lifrcycle tracking`。
 
-- 在 0-3 个 epoch 中，Jittor 的总损失比 PyTorch 略高，到第4个 epoch，Jittor 实现了 **反超**，损失更低
-
-#### 训练稳定性
-
-分析前 5 个 epoch：
-
-![](./visualization/epoch_total_loss.png)
-
-![](./visualization/CV.png)
-
-- 相较于 Pytorch 存在不稳定峰值，Jittor 损失曲线更平稳，波动范围小，变异系数大概下降了 **~10%**。
-
-#### 精度对比
-
-![mAP](./visualization/mAP_Comparison.png)
-
-- 相较于 PyTorch 的实现，Jittor 版本的 RetinaNet 在 COCO mAP@[.5:.95] 指标上达到了 **~0.38**，精度提升了 **11%**。
-
-### 优化建议
-
-- **Backbone替换**：论文中使用Resnet50以及Resnet101，改用更深的Resnet152以及其他变体、使用ResNeXt模型、或者使用Swin Transformer 或 EfficientNet 等网络；
-- **FPN改进**：论文中用了p3~p7的尺度，可以增加尺度提高准确率；也可以调整FPN的通道数；
-- **关于FPN中FCN的使用**：可以增加提取的步骤，在通过backbone提取的特征层次之间或者是抽取特征之后，加入额外卷积模型进行更深层次的加工。
-
-### 相关资源
-
-| 说明                        | 链接                                                         |
-| --------------------------- | ------------------------------------------------------------ |
-| pytorch + resnet50 训练模型 | https://drive.google.com/file/d/1i7K8RT9BuuMspP-OTTRvQBcAk2d9dq2o/view?usp=drive_link |
-| jittor + resnet50 训练模型  | https://drive.google.com/file/d/1NPznVTl7dpHWaFs9ncLAlwUIKdOusrar/view?usp=drive_link |
-| tiny_coco 数据集            | https://www.kaggle.com/datasets/weipengchao/tiny-coco1k      |
-|tiny_coco 评测集全部可视化结果|https://drive.google.com/drive/folders/1uUDtQOu3O3s7rrGU3qecfho8HZqWsGYx?usp=drive_link|
+总结:
+- Jittor: JIT compile, operator fusion, lazy execution, targets to computation efficiency
+- Pytorch: eager execution, 成熟的内存管理，稳定算子实现，targets to 稳定与生态

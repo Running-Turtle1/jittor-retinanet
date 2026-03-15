@@ -1,9 +1,11 @@
-from pycocotools.cocoeval import COCOeval
 import json
+import os
+
+from pycocotools.cocoeval import COCOeval
 import torch
 
 
-def evaluate_coco(dataset, model, threshold = 0.05):
+def evaluate_coco(dataset, model, threshold = 0.05, results_dir = '.'):
     model.eval()
 
     with torch.no_grad():
@@ -53,15 +55,18 @@ def evaluate_coco(dataset, model, threshold = 0.05):
 
         if not len(results):
             model.train()
-            return 0.0
+            return {'map': 0.0, 'ap50': 0.0, 'ap75': 0.0}
+
+    os.makedirs(results_dir, exist_ok = True)
+    results_path = os.path.join(results_dir, f'{dataset.set_name}_bbox_results.json')
 
     # write output
-    with open(f'{dataset.set_name}_bbox_results.json', 'w') as f:
+    with open(results_path, 'w') as f:
         json.dump(results, f, indent = 4)
 
     # load results in COCO evaluation tool
     coco_true = dataset.coco
-    coco_pred = coco_true.loadRes(f'{dataset.set_name}_bbox_results.json')
+    coco_pred = coco_true.loadRes(results_path)
 
     # run COCO evaluation
     coco_eval = COCOeval(coco_true, coco_pred, 'bbox')
@@ -73,9 +78,8 @@ def evaluate_coco(dataset, model, threshold = 0.05):
     model.train()
 
 
-    return coco_eval.stats[0]  # 返回主指标 mAP (IoU=0.50:0.95)
-
-x = torch.tensor([[1, 2], [3, 4], [5, 6]])
-print(x.shape)
-x.unsqueeze(dim=0)
-print(x.shape)
+    return {
+        'map': float(coco_eval.stats[0]),
+        'ap50': float(coco_eval.stats[1]),
+        'ap75': float(coco_eval.stats[2]),
+    }

@@ -1,3 +1,3 @@
-- `download_coco2017.py`：用于下载 coco2017 数据集
-- `tiny_coco_creator`：用于从 coco2017 数据集中抽取自定义大小数据集
-- `img`：部分可视化结果
+- `download_coco2017.py`: 下载 COCO 2017 到仓库根目录下的 `coco/`，结构为 `coco/annotations/` 和 `coco/images/{train2017,val2017}/`
+- `create_tinyCOCO.py`: 从 `coco/train2017` 一次性生成仓库根目录下的 `tiny_coco/` 数据集，并输出中间文件 `tools/tiny_coco_1k.json`
+- `analysis_train.ipynb`: 分析训练 logs

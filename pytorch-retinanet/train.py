@@ -1,52 +1,76 @@
 import argparse
-import os
 import csv
+import os
+import subprocess
 import time
 import warnings
+
 import numpy as np
 import torch
 import torch.optim as optim
+from torch.utils.data import DataLoader
 from torchvision import transforms
-from retinanet import model
+
+from retinanet import coco_eval, model
 from retinanet.dataloader import (
-    CocoDataset, CSVDataset, collater,
+    CocoDataset, collater,
     Resizer, AspectRatioBasedSampler, Augmenter, Normalizer
 )
-from torch.utils.data import DataLoader
-from retinanet import coco_eval, csv_eval
 
 print('CUDA available:', torch.cuda.is_available())
 
-warnings.filterwarnings(
-    "ignore",
-    message = ".*torch.cuda.amp.autocast.*",
-    category = FutureWarning
-)
+
+def get_gpu_mem_mb():
+    if not torch.cuda.is_available():
+        return -1.0
+
+    try:
+        visible = os.environ.get('CUDA_VISIBLE_DEVICES')
+        logical_idx = torch.cuda.current_device()
+        physical_idx = logical_idx
+        if visible:
+            visible_ids = [item.strip() for item in visible.split(',') if item.strip()]
+            if logical_idx < len(visible_ids) and visible_ids[logical_idx].isdigit():
+                physical_idx = int(visible_ids[logical_idx])
+        output = subprocess.check_output(
+            ['nvidia-smi', '--query-gpu=memory.used', '--format=csv,noheader,nounits'],
+            text=True,
+        )
+        values = [line.strip() for line in output.splitlines() if line.strip()]
+        if physical_idx < len(values):
+            return float(values[physical_idx])
+    except Exception:
+        pass
+    return -1.0
+
 
 
 def main(args = None):
     parser = argparse.ArgumentParser(description = 'Training script for RetinaNet with logging.')
-    parser.add_argument('--dataset', default = 'coco', help = 'Dataset type: csv or coco.')  # , required=True)
     parser.add_argument('--coco_path', default = './coco', help = 'Path to COCO directory')
     parser.add_argument('--depth', type = int, default = 50, help = 'ResNet depth: 18, 34, 50, 101, 152')
     parser.add_argument('--epochs', type = int, default = 5, help = 'Number of epochs')
     parser.add_argument('--batch_size', type = int, default = 2, help = 'Batch size')
-    parser.add_argument('--sample_size', type = int, default = 0, help = 'Number of samples to randomly select from training dataset; 0 means use full dataset')
 
     args = parser.parse_args(args)
 
     # 日志文件准备
     os.makedirs('logs', exist_ok = True)
+    os.makedirs('checkpoints', exist_ok = True)
+    os.makedirs('results', exist_ok = True)
     train_log_f = open('logs/train_log.csv', 'w', newline = '')
     train_logger = csv.writer(train_log_f)
     train_logger.writerow([
-        'epoch', 'iter', 'cls_loss', 'reg_loss', 'total_loss',
-        'lr', 'time_elapsed', 'img_per_sec'
+        'epoch', 'iter', 'global_step', 'cls_loss', 'reg_loss', 'total_loss',
+        'lr', 'time_elapsed', 'img_per_sec', 'gpu_mem_mb'
     ])
 
     val_log_f = open('logs/val_log.csv', 'w', newline = '')
     val_logger = csv.writer(val_log_f)
-    val_logger.writerow(['epoch', 'mAP', 'val_time'])
+    val_logger.writerow([
+        'epoch', 'global_step', 'mAP', 'AP50', 'AP75',
+        'val_time', 'epoch_time_sec', 'avg_img_per_sec', 'gpu_mem_mb'
+    ])
 
     # 创建数据集和 DataLoader
     if not args.coco_path:
@@ -63,8 +87,7 @@ def main(args = None):
     sampler = AspectRatioBasedSampler(
         data_source = dataset_train,
         batch_size = args.batch_size,
-        drop_last = False,
-        sample_size = args.sample_size
+        drop_last = False
     )
     dataloader_train = DataLoader(
         dataset_train,
@@ -77,8 +100,7 @@ def main(args = None):
         sampler_val = AspectRatioBasedSampler(
             data_source = dataset_val,
             batch_size = 1,
-            drop_last = False,
-            sample_size = args.sample_size
+            drop_last = False
         )
         dataloader_val = DataLoader(
             dataset_val,
@@ -103,10 +125,7 @@ def main(args = None):
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     retinanet = retinanet.to(device)
-    # if torch.cuda.is_available():
-    #     retinanet = torch.nn.DataParallel(retinanet).cuda()
-    # else:
-    #     retinanet = torch.nn.DataParallel(retinanet)
+
 
     retinanet.training = True
 
@@ -114,15 +133,13 @@ def main(args = None):
     scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, patience = 3, verbose = True)
 
     print('Num training images:', len(dataset_train))
-    print('Sample Size:', len(dataset_train) if args.sample_size == 0 else args.sample_size)
+    global_step = 0
 
     # 训练循环
     for epoch_num in range(args.epochs):
+        epoch_start = time.time()
         retinanet.train()
         retinanet.freeze_bn()
-        # retinanet.module.freeze_bn()
-
-        # 本 epoch 的 loss 累积，用于 scheduler
         epoch_losses = []
 
         for iter_num, data in enumerate(dataloader_train):
@@ -144,15 +161,17 @@ def main(args = None):
                 total_loss.backward()
                 torch.nn.utils.clip_grad_norm_(retinanet.parameters(), max_norm = 0.1)
                 optimizer.step()
+                global_step += 1
 
                 # 记录并写日志
                 lr = optimizer.param_groups[0]['lr']
                 iter_time = time.time() - iter_start
                 img_per_sec = data['img'].shape[0] / iter_time
+                gpu_mem_mb = get_gpu_mem_mb()
                 train_logger.writerow([
-                    epoch_num, iter_num,
+                    epoch_num, iter_num, global_step,
                     float(cls_loss), float(reg_loss), float(total_loss),
-                    lr, round(iter_time, 4), round(img_per_sec, 2)
+                    lr, round(iter_time, 4), round(img_per_sec, 2), gpu_mem_mb
                 ])
                 epoch_losses.append(float(total_loss))
 
@@ -168,16 +187,19 @@ def main(args = None):
         # 验证
         if dataset_val is not None:
             val_start = time.time()
-            mAP = coco_eval.evaluate_coco(dataset_val, retinanet.to(device))
-            # if args.dataset == 'coco':
-            #     mAP = coco_eval.evaluate_coco(dataset_val, retinanet)
-            # else:
-            #     mAP = csv_eval.evaluate(dataset_val, retinanet)
+            metrics = coco_eval.evaluate_coco(dataset_val, retinanet.to(device), results_dir = 'results')
             val_time = time.time() - val_start
-            val_logger.writerow([epoch_num, mAP, round(val_time, 4)])
-            if mAP is None:
-                mAP = -1.0
-            print(f"Val Epoch {epoch_num} | mAP {mAP:.3f} | time {val_time:.2f}s")
+            epoch_time_sec = time.time() - epoch_start
+            avg_img_per_sec = len(dataset_train) / epoch_time_sec if epoch_time_sec > 0 else 0.0
+            gpu_mem_mb = get_gpu_mem_mb()
+            mAP = metrics['map'] if metrics is not None else -1.0
+            ap50 = metrics['ap50'] if metrics is not None else -1.0
+            ap75 = metrics['ap75'] if metrics is not None else -1.0
+            val_logger.writerow([
+                epoch_num, global_step, mAP, ap50, ap75,
+                round(val_time, 4), round(epoch_time_sec, 4), round(avg_img_per_sec, 2), gpu_mem_mb
+            ])
+            print(f"Val Epoch {epoch_num} | mAP {mAP:.3f} | AP50 {ap50:.3f} | AP75 {ap75:.3f} | time {val_time:.2f}s")
 
         # 更新学习率
         if epoch_losses:
@@ -185,11 +207,11 @@ def main(args = None):
             scheduler.step(avg_loss)
 
         # 保存训练过程中的权重
-        torch.save(retinanet, f'logs/{args.dataset}_retinanet_epoch{epoch_num}.pt')
+        torch.save(retinanet, f'checkpoints/coco_retinanet_epoch{epoch_num}.pt')
 
     # 训练结束后保存最终模型
     retinanet.eval()
-    torch.save(retinanet, 'logs/model_final.pt')
+    torch.save(retinanet, 'checkpoints/model_final.pt')
 
     train_log_f.close()
     val_log_f.close()
